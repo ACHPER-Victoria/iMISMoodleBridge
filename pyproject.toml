@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "imismoodlebridge"
+version = "0.0.1"
+authors = [
+  { name="Example Author", email="author@example.com" },
+]
+description = "Crude python module to create a bridge between iMIS and Moodle"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "requests",
+    "flask",
+    "iMISpy @ git+https://github.com/ACHPER-Victoria/iMISpy"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/ACHPER-Victoria/imismoodlehelper"
+"Bug Tracker" = "https://github.com/ACHPER-Victoria/imismoodlehelper/issues"
+
+[tool.setuptools]
+packages = ["imismoodlebridge"]
