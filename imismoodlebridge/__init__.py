@@ -6,7 +6,10 @@ from .routes import bp
 
 
 def create_app(test_config=None):
-    app = Flask(__name__, instance_relative_config=False)
+    app = Flask(
+        __name__,
+        instance_path=os.environ["WSGI_ROOT"],
+        instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='supersecret',
     )
