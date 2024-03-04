@@ -3,10 +3,27 @@
 ## Setup with cPanel
 * In cPanel go to Setup Python App
 * Create Application
-
-
-* Download [passenger_wsgi.py](passenger_wsgi.py)
-* Using the cPanel file manager, place that file in
+* Make sure Python Version is at least 3.10. Your cPanel should have a recommended.
+* Application root - This is the directory/folder that the Settings file and cache will live. Suggest something simple like "moodlebridge"
+* Application URL - This portion makes up some of the URL you will enter in the iMIS Client Application setup. I suggest something basic like "moodlebridge"
+* Click Create
+* Click Stop
+* Click the "source" box at the top of the page where it says "to enter the virual environment". That will copy in to your clipboard.
+* Go to cPanel Home -> Terminal
+* Right click in the black box and select paste
+ * That should paste ```source /home/....etc.``` If it does not, delete, go back to your Python App and try clicking on the banner again to copy the text (or copy it manually)
+* Press enter
+* Enter the following and press enter ```pip install git+https://github.com/ACHPER-Victoria/iMISMoodleBridge```
+* Open [passenger_wsgi.py](passenger_wsgi.py), then click on the download button to download the file.
+ * Make sure the file you download is called ```passenger_wsgi.py``` and not ```passenger_wsgi (1).py``` or similar.
+* You can navigate away from the Terminal now to the cPanel File manager
+* Using the cPanel file manager, navigate to the folder you entered in step 4. Click on the Upload button and select the ```passenger_wsgi.py``` file you previously downloaded. If done successfully you will be prompted to overwrite file. Select Yes.
+* Open [sampleconfig.json](sampleconfig.json) and click on the download button.
+* Open this file on your computer and edit the settings to your needs.
+ * REQUIRED: HOMEPAGE, IMIS_MOODLE_LOGIN_PAGE, IMIS_CLIENT_ID, IMIS_CLIENT_SECRET, MOODLE_URL, MOODLE_AUTH_TOKEN, MOODLE_FUNCTION, iMIS_User, iMIS_Password, API_URL, iMIS_PANELSOURCE_IQA, MOODLE_SYNC_TOKEN
+* Save this file as "config.json"
+* In the cPanel File Manager navigate to your folder where ```passenger_wsgi.py``` is. Create a new folder called ```instance```. Navigate inside the newly created folder. Upload your config.json here.
+* Nvigate to cPanel -> Python Web App -> click on the pencil -> Click on Start App
 
 ## Create Panel Source to manage products/events to autoenroll
 * iMIS staff site -> RiSE -> Page Builder -> Manage Content
