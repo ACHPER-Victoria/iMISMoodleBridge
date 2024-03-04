@@ -13,13 +13,11 @@ GET_LOGIN_URL = re.compile(r"<VALUE>([^<]+)</VALUE>")
 log = logging.getLogger()
 bp = Blueprint('oauth2', __name__)
 
-
-
 @bp.route('/', methods=('GET', 'POST'))
 def home():
     return redirect(current_app.config["HOMEPAGE"])
 
-@bp.route("/update/<imisID>", method=('GET'))
+@bp.route("/update/<imisID>", methods=('GET',))
 def updateUser(imisID):
     # send ID to synctask to check for updated course registrations
     client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
