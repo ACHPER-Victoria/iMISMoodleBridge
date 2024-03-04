@@ -39,7 +39,7 @@ def login():
             current_app.config["IMIS_CLIENT_SECRET"],
             refresh_token
         )
-        if "username" not in tokendata:
+        if "userName" not in tokendata:
             log.error(f"Missing Username. TokenData: {tokendata}")
             return redirect(current_app.config['HOMEPAGE'])
         if tokendata["userName"] == "GUEST": 
@@ -72,9 +72,12 @@ def login():
             data=postdata).text
         # send ID to synctask to check for updated course registrations
         client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
-        client.connect(os.path.join(current_app.instance_path, "socket"))
-        client.sendall(imisUserData["UserId"].encode())
-        client.close()
+        try:
+            client.connect(os.path.join(current_app.instance_path, "socket"))
+            client.sendall(imisUserData["UserId"].encode())
+            client.close()
+        except FileNotFoundError:
+            logging.error("Socket not found, synctask not running. Check cron.")
         # redirect to moodle proper.
         return redirect(GET_LOGIN_URL.search(response).group(1))
     else:
