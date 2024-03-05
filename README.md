@@ -1,3 +1,5 @@
+TODO: fill this out more and reorder it in a way that makes sense chronologically.
+
 ## Get a cPanel host and install Moodle
 
 ## Setup with cPanel

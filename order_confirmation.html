@@ -1,0 +1,11 @@
+<!-- Place all of this in the "HTML" view/button of a HTML iPart on your order confirmation page.
+     That way new orders will have users accounts pre-created and pre-enrolled. 
+     You must modify it to include your eLearn domain. This will be what you see in your cpanel in your Python Web App page.
+     TODO: Make this more clear.
+-->
+<script>
+window.addEventListener("DOMContentLoaded", function() {
+    const imisid = JSON.parse(document.getElementById("__ClientContext").value).loggedInPartyId
+    fetch("https://YOUR_SITE_HERE/APP_NAME_HERE/update/"+ imisid, { redirect:"manual", mode: "no-cors" });
+}); 
+</script>

@@ -1,5 +1,5 @@
 import time
-from flask import Blueprint, request, abort
+from flask import Blueprint, jsonify, request, abort
 from flask import redirect, current_app
 from .imisUtil import getiMISUserData, getiMISTokenData, getiMISProfileData, findEmail
 import requests
@@ -19,12 +19,17 @@ def home():
 
 @bp.route("/update/<imisID>", methods=('GET',))
 def updateUser(imisID):
+    if len(imisID) > 10:
+        # crude attempt to stop overflowing my socket buffer
+        return redirect(current_app.config["IMIS_MOODLE_LOGIN_PAGE"])
     # send ID to synctask to check for updated course registrations
     client = socket.socket(socket.AF_UNIX, socket.SOCK_STREAM)
     client.connect(os.path.join(current_app.instance_path, "socket"))
     client.sendall(imisID.encode())
     client.close()
-    return redirect(current_app.config["IMIS_MOODLE_LOGIN_PAGE"])
+    response = jsonify(success=True)
+    response.headers["Access-Control-Allow-Origin"] = current_app.config['HOMEPAGE']
+    return response
 
 # only accept POST from iMIS
 @bp.route('/login', methods=('GET', 'POST', 'HEAD'))
@@ -56,7 +61,7 @@ def login():
             abort(500)
         imisUserData = getiMISUserData(current_app.config['HOMEPAGE'], tokendata["userName"],
             clientid, tokendata["access_token"])
-        if (imisUserData["IsAnonymous"]): redirect(current_app.config["IMIS_MOODLE_LOGIN_PAGE"])
+        if (imisUserData["IsAnonymous"]): return redirect(current_app.config["IMIS_MOODLE_LOGIN_PAGE"])
         
         # get some iMIS user data (first name, last name, email)
         profiledata = getiMISProfileData(current_app.config['HOMEPAGE'], imisUserData["UserId"], tokendata["access_token"])

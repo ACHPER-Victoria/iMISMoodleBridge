@@ -10,7 +10,7 @@
     "WORKERS": 2,
     "iMIS_User": "API_USER",
     "iMIS_Password": "",
-    "API_URL": "https://your.imis.site/api",
+    "API_URL": "https://your.imis.site.MUST.END.IN.TRAILING.SLASH/api/",
     "iMIS_PANELSOURCE_IQA": "Path_of_iQA_for_panel_source",
     "iMIS_PURCHASED_PRODUCTS_CLASS_ID": "E88E66B1-9516-47F9-88DC-E2EB8A3EF13E",
     "PANEL_CACHE_TIME": 10,
