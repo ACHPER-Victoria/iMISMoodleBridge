@@ -5,7 +5,7 @@
 -->
 <script>
 window.addEventListener("DOMContentLoaded", function() {
-    const imisid = JSON.parse(document.getElementById("__ClientContext").value).loggedInPartyId
+    const imisid = JSON.parse(document.getElementById("__ClientContext").value).selectedPartyId
     fetch("https://YOUR_SITE_HERE/APP_NAME_HERE/update/"+ imisid, { redirect:"manual", mode: "no-cors" });
 }); 
 </script>

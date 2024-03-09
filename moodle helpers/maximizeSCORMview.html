@@ -1,0 +1,15 @@
+<!-- Maximize SCORM package viewable area -->
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    if (document.getElementById("scormpage") != null) {
+        // maximize view
+        document.getElementById("page-header").style.display = "none";
+        document.getElementById("topofscroll").style.padding = 0;
+        document.getElementById("topofscroll").style.margin = 0;
+        var node = document.querySelector("#region-main div[role='main'] div.d-flex a[title='Exit activity'")
+        node.style.margin = "0.6rem"
+        node.innerText = "Back to course"
+        document.getElementById("usernavigation").insertBefore(node, document.getElementById("nav-notification-popover-container"))
+    }
+});
+</script>

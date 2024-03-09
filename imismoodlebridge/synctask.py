@@ -128,8 +128,9 @@ def userProcess(cache, api, imisid):
     if courses:
         uids = convertUserMoodleID([imisid])
         logger.debug("Got user map: %s", uids)
-        if imisid not in uids: createMoodleUsers([user])
-        uids = convertUserMoodleID([imisid])
+        if imisid not in uids: 
+            createMoodleUsers([user])
+            uids = convertUserMoodleID([imisid])
         if imisid in uids:
             uid = uids[imisid]
             logger.debug("Found UID %s for iMIS ID %s", uid, imisid)
