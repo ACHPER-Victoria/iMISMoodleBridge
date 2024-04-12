@@ -125,7 +125,9 @@ def userProcess(cache, api, imisid):
     for item in api.apiIterator("GroupMember", [["PartyID", imisid]]):
         if item["Group"]["GroupId"] in cache.getPanelSource()["CMap"]: # this checks for literal Group IDs->CourseID
             cids = cache.getPanelSource()["CMap"][item["Group"]["GroupId"]]
-            courses.extend(cids.split(","))
+            for c in cids.split(","):
+                c = c.strip()
+                if c != "": courses.append(c)
             if not user:
                 user = {"username": imisid, "email": item["Party"]["Email"] }
     if courses:
@@ -146,6 +148,8 @@ def fullSync(cache, q):
     synccourses = {} # coursid: [list of groups]
     for gid, cids in cache.getPanelSource()["CMap"].items():
         for ci in cids.split(","):
+            ci = ci.strip()
+            if ci == "": continue
             if ci in synccourses: synccourses[ci].append(gid)
             else: synccourses[ci] = [gid]
     for cid in synccourses:
@@ -189,10 +193,14 @@ def userProcessor(q):
         # process user id and or <other thing>
         task, taskdata = data
         logger.debug("Got task (%s), with data (%s)", task, taskdata)
-        if task is None: userProcess(cache, api, taskdata)
-        elif task == "full": fullSync(cache, q)
-        elif task == "fulldone": cache.updateFullSync()
-        elif task == "course": courseSync(api, taskdata)
+        try:
+            if task is None: userProcess(cache, api, taskdata)
+            elif task == "full": fullSync(cache, q)
+            elif task == "fulldone": cache.updateFullSync()
+            elif task == "course": courseSync(api, taskdata)
+        except Exception as e:
+            if issubclass(e.__class__, KeyboardInterrupt): raise
+            else: logging.critical(e, exc_info=True)
         data = q.get()
 
 if __name__ == '__main__':

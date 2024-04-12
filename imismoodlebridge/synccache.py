@@ -5,7 +5,6 @@ import logging
 from iMISpy import openAPI
 logger = logging.getLogger(__name__)
 
-
 # use implied rowid
 TABLE = {
     "PANELSOURCE" : "CREATE TABLE panelsource(rowid INTEGER PRIMARY KEY, expires REAL, json TEXT)",
