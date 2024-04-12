@@ -40,24 +40,24 @@ class CacheDB:
         # get panel source data
         logger.debug("Cache - Refreshing panel data")
         t = time.time() + (self.config.get("PANEL_CACHE_TIME", 10)*60) - 10 # 10 seconds before
-        imisCodeToGroup = {}
-        imisGroupToCode = {}
+        imisCodeToGroupID = {}
+        imisGroupIDtoCode = {}
         api = openAPI(self.config)
         for item in api.apiIterator("Group", [["GroupClassId", "EVENT"] ]):
-            imisCodeToGroup[item["GroupId"]] = item["GroupId"]
-            imisGroupToCode[item["GroupId"]] = item["GroupId"]
+            imisCodeToGroupID[item["GroupId"]] = item["GroupId"] # Put Event-<eventcode> Groups IDs as "imis Code"
+            imisGroupIDtoCode[item["GroupId"]] = item["GroupId"]
         for item in api.apiIterator("Group", [["GroupClassId", self.config.get("iMIS_PURCHASED_PRODUCTS_CLASS_ID", "E88E66B1-9516-47F9-88DC-E2EB8A3EF13E")] ]):
-            imisCodeToGroup[item["Name"]] = item["GroupId"]
-            imisGroupToCode[item["GroupId"]] = item["Name"]
+            imisCodeToGroupID[item["Name"]] = item["GroupId"] # Product purcahse group name -> Group ID
+            imisGroupIDtoCode[item["GroupId"]] = item["Name"]
         pd = {}
         pd["CMap"] = {}
         pd["imisgroupcode"] = {} # this isn't used... yet.
         for item in api.apiIterator("query", [["QueryName", self.config["iMIS_PANELSOURCE_IQA"] ]]):
             imisside = item["IMIS_SIDE"]
             moodleside = item["MOODLE_SIDE"]
-            if imisside in imisCodeToGroup:
-                pd["CMap"][imisCodeToGroup[imisside]] = moodleside
-                pd["imisgroupcode"][imisCodeToGroup[imisside]] = imisside
+            if imisside in imisCodeToGroupID:
+                pd["CMap"][imisCodeToGroupID[imisside]] = moodleside
+                pd["imisgroupcode"][imisCodeToGroupID[imisside]] = imisside
         self.db.execute(PANELSOURCE_ROW, (1, t, json.dumps(pd)))
         self.db.commit()
         self.paneldata = {"expires": t, "json": pd}

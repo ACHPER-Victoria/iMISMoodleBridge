@@ -25,12 +25,14 @@ LOG_PATH = os.path.join(INSTANCE_PATH, "synclog.txt")
 
 CONFIG = json.load(open(CONFIG_PATH, "rb"))
 
-LOGGING_MSG_FORMAT  = '%(name)s [%(levelname)s] [%(asctime)s] %(message)s'
+LOGGING_MSG_FORMAT  = '%(asctime)s %(levelname)s [%(name)s] %(message)s'
 LOGGING_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
+formatter = logging.Formatter(LOGGING_MSG_FORMAT)
 
 logging.basicConfig(level=logging.WARN, format=LOGGING_MSG_FORMAT, datefmt=LOGGING_DATE_FORMAT)
 rootlogger = logging.getLogger(None)
 flogger = TimedRotatingFileHandler(LOG_PATH, 'midnight', backupCount=5)
+flogger.setFormatter(formatter)
 rootlogger.addHandler(flogger)
 logger = logging.getLogger(__name__)
 logger.setLevel(CONFIG.get("LOG_LEVEL", "WARN"))
@@ -121,8 +123,9 @@ def userProcess(cache, api, imisid):
     courses = []
     user = None
     for item in api.apiIterator("GroupMember", [["PartyID", imisid]]):
-        if item["Group"]["GroupId"] in cache.getPanelSource()["CMap"]:
-            courses.append(cache.getPanelSource()["CMap"][item["Group"]["GroupId"]])
+        if item["Group"]["GroupId"] in cache.getPanelSource()["CMap"]: # this checks for literal Group IDs->CourseID
+            cids = cache.getPanelSource()["CMap"][item["Group"]["GroupId"]]
+            courses.extend(cids.split(","))
             if not user:
                 user = {"username": imisid, "email": item["Party"]["Email"] }
     if courses:
@@ -141,9 +144,10 @@ def userProcess(cache, api, imisid):
 
 def fullSync(cache, q):
     synccourses = {} # coursid: [list of groups]
-    for gid, cid in cache.getPanelSource()["CMap"].items():
-        if cid in synccourses: synccourses[cid].append(gid)
-        else: synccourses[cid] = [gid]
+    for gid, cids in cache.getPanelSource()["CMap"].items():
+        for ci in cids.split(","):
+            if ci in synccourses: synccourses[ci].append(gid)
+            else: synccourses[ci] = [gid]
     for cid in synccourses:
         logger.debug("Queuing course sync: %s - %s", cid, synccourses[cid])
         q.put(("course", (cid, synccourses[cid])))
@@ -251,3 +255,4 @@ if __name__ == '__main__':
     while True:
         try: q.get_nowait()
         except queue.Empty: break
+    logger.debug("Finally quit.")
