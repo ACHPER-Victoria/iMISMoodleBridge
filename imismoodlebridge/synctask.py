@@ -25,7 +25,7 @@ LOG_PATH = os.path.join(INSTANCE_PATH, "synclog.txt")
 
 CONFIG = json.load(open(CONFIG_PATH, "rb"))
 
-LOGGING_MSG_FORMAT  = '%(asctime)s %(levelname)s [%(name)s] %(message)s'
+LOGGING_MSG_FORMAT  = '%(asctime)s %(process)d %(levelname)s [%(name)s] %(message)s'
 LOGGING_DATE_FORMAT = '%Y-%m-%d %H:%M:%S'
 formatter = logging.Formatter(LOGGING_MSG_FORMAT)
 
