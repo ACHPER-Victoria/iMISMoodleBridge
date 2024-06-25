@@ -200,8 +200,9 @@ def userProcessor(q):
             elif task == "course": courseSync(api, taskdata)
         except Exception as e:
             if issubclass(e.__class__, KeyboardInterrupt): raise
-            else: logging.critical(e, exc_info=True)
+            else: logger.critical(e, exc_info=True)
         data = q.get()
+    logger.debug("Finished processing worker.")
 
 if __name__ == '__main__':
     runtime = time.time() + (CONFIG.get("WORKER_DUATION", 2) * 60) + 10
@@ -251,16 +252,13 @@ if __name__ == '__main__':
         traceback.print_exc()
     r.terminate()
     for x in range(CONFIG.get("WORKERS", 2)):
+        logger.debug("Putting quit...")
         q.put(None)
     if fullsyncprocesses:
         for x in fullsyncprocesses:
             fs.put(None)
         connection.wait(fp.sentinel for fp in fullsyncprocesses)
     logger.debug("Waiting for processes to exit...")
-    connection.wait(p.sentinel for p in processes)
-    logger.debug("Emptying queue.")
-    #empty queue - just in case, do we even need to do this?
-    while True:
-        try: q.get_nowait()
-        except queue.Empty: break
-    logger.debug("Finally quit.")
+    # for some reason the following doesn't actually wait and zombie process will keep main process alive.
+    # connection.wait(p.sentinel for p in processes)
+    logger.debug("Quitting.")
